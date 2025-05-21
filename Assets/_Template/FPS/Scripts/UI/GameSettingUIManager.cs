@@ -52,6 +52,17 @@ namespace Unity.FPS.UI
         [Tooltip("Slider for SFX volume control.")]
         [SerializeField] private Slider sfxVolumeSlider;
 
+
+        [Header("Language Preferences UI Elements")]
+        [Tooltip("Dropdown for subtitle or title language selection")]
+        [SerializeField] private TMP_Dropdown langTitleSelectionDropdown; // This is a standard UI.Dropdown
+
+        [Tooltip("Voice language selection dropdown")]
+        [SerializeField] private TMP_Dropdown audioLangSelectionDropdown; // I will configure later, configuration for sounds will be in different code.
+
+        [Tooltip("Subtitle enable disable toggle")]
+        [SerializeField] private Toggle subtitleToggle; // I will configure it later :')
+
         // Private fields for managing UI state and mappings
         private Resolution[] availableResolutions;
         private List<string> resolutionOptionsList = new List<string>();
@@ -171,6 +182,34 @@ namespace Unity.FPS.UI
                 antiAliasingDropDown.AddOptions(antiAliasingOptions.Values.ToList()); // Store the AA text ("Off", "2x"...)
             }
 
+            // --- ADDED FOR LANGUAGE UI ---
+            // Populate Title/Subtitle Language Dropdown
+            if (langTitleSelectionDropdown != null)
+            {
+                langTitleSelectionDropdown.ClearOptions();
+                List<string> availableLangCodes = gameSettingsManager.GetAvailableLanguageCodes();
+                if (availableLangCodes != null && availableLangCodes.Any())
+                {
+                    // Optional: Convert codes to more user-friendly names if you have a mapping
+                    // For now, using codes directly.
+                    langTitleSelectionDropdown.AddOptions(availableLangCodes);
+                }
+                else
+                {
+                    Debug.LogWarning("GameSettingUIManager: No available languages found to populate dropdown.");
+                    langTitleSelectionDropdown.AddOptions(new List<string> { "N/A" }); // Placeholder
+                }
+            }
+
+            // Populate Audio Language Dropdown (Placeholder for now)
+            if (audioLangSelectionDropdown != null)
+            {
+                audioLangSelectionDropdown.ClearOptions();
+                // TODO: Populate with actual audio language options when implemented
+                audioLangSelectionDropdown.AddOptions(new List<string> { "Default (To be configured)" });
+            }
+            // --- END OF ADDED FOR LANGUAGE UI ---
+
             // (Optional: Populate Quality Preset Dropdown)
             // if (qualityPresetDropDown != null)
             // {
@@ -201,6 +240,12 @@ namespace Unity.FPS.UI
             if (musicVolumeSlider != null) musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
             if (sfxVolumeSlider != null) sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
 
+            // --- ADDED FOR LANGUAGE UI ---
+            if (langTitleSelectionDropdown != null) langTitleSelectionDropdown.onValueChanged.AddListener(OnTitleLanguageChanged);
+            if (audioLangSelectionDropdown != null) audioLangSelectionDropdown.onValueChanged.AddListener(OnAudioLanguageChanged); // Placeholder
+            if (subtitleToggle != null) subtitleToggle.onValueChanged.AddListener(OnSubtitleToggleChanged); // Placeholder
+            // --- END OF ADDED FOR LANGUAGE UI ---
+
             // (Optional Listeners)
             // if (qualityPresetDropDown != null) qualityPresetDropDown.onValueChanged.AddListener(OnQualityPresetChanged);
             // if (windowModeDropDown != null) windowModeDropDown.onValueChanged.AddListener(OnWindowModeChanged);
@@ -221,6 +266,12 @@ namespace Unity.FPS.UI
             if (masterVolumeSlider != null) masterVolumeSlider.onValueChanged.RemoveListener(OnMasterVolumeChanged);
             if (musicVolumeSlider != null) musicVolumeSlider.onValueChanged.RemoveListener(OnMusicVolumeChanged);
             if (sfxVolumeSlider != null) sfxVolumeSlider.onValueChanged.RemoveListener(OnSFXVolumeChanged);
+
+            // --- ADDED FOR LANGUAGE UI ---
+            if (langTitleSelectionDropdown != null) langTitleSelectionDropdown.onValueChanged.RemoveListener(OnTitleLanguageChanged);
+            if (audioLangSelectionDropdown != null) audioLangSelectionDropdown.onValueChanged.RemoveListener(OnAudioLanguageChanged);
+            if (subtitleToggle != null) subtitleToggle.onValueChanged.RemoveListener(OnSubtitleToggleChanged);
+            // --- END OF ADDED FOR LANGUAGE UI ---
 
             // (Optional Listeners)
             // if (qualityPresetDropDown != null) qualityPresetDropDown.onValueChanged.RemoveListener(OnQualityPresetChanged);
@@ -254,9 +305,6 @@ namespace Unity.FPS.UI
                 }
                 else
                 {
-                    // If current resolution is not in the list (e.g. custom launch param),
-                    // try to find a close match or default to first/highest.
-                    // For simplicity, we'll log a warning or select the first one.
                     Debug.LogWarning($"GameSettingUIManager: Current resolution {currentResString} not found in dropdown. Defaulting selection.");
                     if (resolutionDropDown.options.Count > 0) resolutionDropDown.value = 0;
                 }
@@ -292,7 +340,7 @@ namespace Unity.FPS.UI
 
             if (fullscreenToggle != null)
             {
-                fullscreenToggle.isOn = gameSettingsManager.GetWindowMode() == FullScreenMode.FullScreenWindow;
+                fullscreenToggle.isOn = gameSettingsManager.GetWindowMode() == FullScreenMode.FullScreenWindow || gameSettingsManager.GetWindowMode() == FullScreenMode.ExclusiveFullScreen;
             }
 
             // (Optional: Refresh Quality Preset)
@@ -309,11 +357,11 @@ namespace Unity.FPS.UI
                 //     windowModeDropDown.RefreshShownValue();
                 // }
 
-                // Refresh Audio Settings
-                if (masterVolumeSlider != null)
-                {
-                    masterVolumeSlider.value = gameSettingsManager.GetMasterVolume();
-                }
+            // Refresh Audio Settings
+            if (masterVolumeSlider != null)
+            {
+                masterVolumeSlider.value = gameSettingsManager.GetMasterVolume();
+            }
             if (musicVolumeSlider != null)
             {
                 musicVolumeSlider.value = gameSettingsManager.GetMusicVolume();
@@ -322,6 +370,57 @@ namespace Unity.FPS.UI
             {
                 sfxVolumeSlider.value = gameSettingsManager.GetSFXVolume();
             }
+
+            // --- ADDED FOR LANGUAGE UI ---
+            // Refresh Title/Subtitle Language Dropdown
+            if (langTitleSelectionDropdown != null)
+            {
+                string currentLangCode = gameSettingsManager.GetSelectedLanguageCode();
+                if (!string.IsNullOrEmpty(currentLangCode))
+                {
+                    // Find the index of the current language code in the dropdown options
+                    int langIndex = -1;
+                    for (int i = 0; i < langTitleSelectionDropdown.options.Count; i++)
+                    {
+                        if (langTitleSelectionDropdown.options[i].text == currentLangCode)
+                        {
+                            langIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (langIndex != -1)
+                    {
+                        langTitleSelectionDropdown.value = langIndex;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"GameSettingUIManager: Current language code '{currentLangCode}' not found in dropdown. Defaulting selection.");
+                        if (langTitleSelectionDropdown.options.Count > 0) langTitleSelectionDropdown.value = 0;
+                    }
+                }
+                else if (langTitleSelectionDropdown.options.Count > 0)
+                {
+                     langTitleSelectionDropdown.value = 0; // Default to first if no language set
+                }
+                langTitleSelectionDropdown.RefreshShownValue();
+            }
+
+            // Refresh Audio Language Dropdown (Placeholder)
+            if (audioLangSelectionDropdown != null)
+            {
+                // TODO: Set to current audio language when implemented
+                if(audioLangSelectionDropdown.options.Count > 0) audioLangSelectionDropdown.value = 0;
+                audioLangSelectionDropdown.RefreshShownValue();
+            }
+
+            // Refresh Subtitle Toggle (Placeholder)
+            if (subtitleToggle != null)
+            {
+                // TODO: Set based on current subtitle setting when implemented
+                subtitleToggle.isOn = true; // Default to on for now
+            }
+            // --- END OF ADDED FOR LANGUAGE UI ---
 
             RegisterUIListeners(); // Re-register listeners
         }
@@ -334,10 +433,7 @@ namespace Unity.FPS.UI
         {
             if (gameSettingsManager == null || availableResolutions == null || index < 0 || index >= resolutionOptionsList.Count) return;
 
-            // Parse the selected option string to get W, H, R
-            // This is a bit fragile; ideally, store Resolution objects or structs in the dropdown.
-            // For simplicity with TMP_Dropdown, we parse the string.
-            string selectedOption = resolutionOptionsList[index]; // e.g., "1920 x 1080 @ 60 Hz"
+            string selectedOption = resolutionOptionsList[index];
             string[] parts = selectedOption.Split(new[] { " x ", " @ ", " Hz" }, System.StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length == 3 &&
@@ -356,7 +452,6 @@ namespace Unity.FPS.UI
         public void OnTextureQualityChanged(int index)
         {
             if (gameSettingsManager == null) return;
-            // Index directly corresponds to the quality level (0-3)
             gameSettingsManager.SetTextureQuality(index);
         }
 
@@ -373,16 +468,12 @@ namespace Unity.FPS.UI
         }
 
 
-        private void OnFullScreenToggleChanged(bool arg0)
+        private void OnFullScreenToggleChanged(bool isOn)
         {
-            if (arg0)
-            {
-                this.gameSettingsManager.SetWindowMode(FullScreenMode.FullScreenWindow);
-            }
-            else
-            {
-                this.gameSettingsManager.SetWindowMode(FullScreenMode.Windowed);
-            }
+            if (gameSettingsManager == null) return;
+            // Assuming FullScreenWindow is your preferred "fullscreen" and Windowed for "not fullscreen"
+            // You might want to offer ExclusiveFullScreen as well if desired.
+            gameSettingsManager.SetWindowMode(isOn ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed);
         }
 
         // (Optional Handlers)
@@ -390,8 +481,6 @@ namespace Unity.FPS.UI
         // {
         //     if (gameSettingsManager == null) return;
         //     gameSettingsManager.SetQualityPreset(index);
-        //     // Important: After changing preset, other settings might have changed.
-        //     // Refresh UI to reflect these potential underlying changes.
         //     RefreshAllUIValues();
         // }
         //
@@ -420,44 +509,58 @@ namespace Unity.FPS.UI
             gameSettingsManager.SetSFXVolume(value);
         }
 
+        // --- ADDED FOR LANGUAGE UI ---
+        // Language Settings Handlers
+        public void OnTitleLanguageChanged(int index)
+        {
+            if (gameSettingsManager == null || langTitleSelectionDropdown == null || index < 0 || index >= langTitleSelectionDropdown.options.Count)
+            {
+                return;
+            }
+
+            string selectedLangCode = langTitleSelectionDropdown.options[index].text;
+            if (selectedLangCode == "N/A") return; // Ignore placeholder
+
+            Debug.Log($"GameSettingUIManager: Title language changed to index {index}, code: {selectedLangCode}");
+            gameSettingsManager.SetLanguage(selectedLangCode);
+        }
+
+        public void OnAudioLanguageChanged(int index)
+        {
+            if (gameSettingsManager == null) return;
+            // TODO: Implement when audio language selection is fully integrated into GameSettingsManager
+            Debug.Log($"GameSettingUIManager: Audio language changed to index {index}. (Placeholder - Not fully implemented yet)");
+            // string selectedAudioLang = audioLangSelectionDropdown.options[index].text;
+            // gameSettingsManager.SetAudioLanguage(selectedAudioLang); // Example future call
+        }
+
+        public void OnSubtitleToggleChanged(bool isOn)
+        {
+            if (gameSettingsManager == null) return;
+            // TODO: Implement when subtitle toggle is fully integrated into GameSettingsManager
+            Debug.Log($"GameSettingUIManager: Subtitle toggle changed to {isOn}. (Placeholder - Not fully implemented yet)");
+            // gameSettingsManager.SetSubtitlesEnabled(isOn); // Example future call
+        }
+        // --- END OF ADDED FOR LANGUAGE UI ---
+
 
         // --- BUTTON HANDLERS ---
 
-        /// <summary>
-        /// Handles the "Save/Apply" button press.
-        /// Note: With the current GameSettingsManager design, settings are applied and saved
-        /// immediately when individual UI controls are changed. This button might be
-        /// redundant or used for other purposes like closing the settings panel.
-        /// If you want a separate "Apply" step, GameSettingsManager's Set... methods
-        /// should only update 'currentSettings' without calling Apply... and SaveSettings().
-        /// Then, this button would call gameSettingsManager.ApplyAllSettings() and gameSettingsManager.SaveSettings().
-        /// </summary>
         public void SaveApplyButton()
         {
             if (gameSettingsManager == null) return;
-            // As per current GameSettingsManager, changes are already applied and saved.
-            // This button could provide feedback or close the UI.
             Debug.Log("GameSettingUIManager: Settings are continuously saved. 'Apply' button pressed (no explicit action needed here).");
-            // Example: Close the settings UI
-            // gameObject.SetActive(false);
         }
 
-        /// <summary>
-        /// Resets all settings to their default values and updates the UI.
-        /// </summary>
         public void ResetToDefaultButton()
         {
             if (gameSettingsManager == null) return;
             gameSettingsManager.ResetToDefaults();
-            RefreshAllUIValues(); // Update UI to reflect new default settings
+            RefreshAllUIValues();
         }
 
-        /// <summary>
-        /// Closes the settings UI panel.
-        /// </summary>
         public void ExitButton()
         {
-            // Hide this game object to exit from the UI
             this.gameObject.SetActive(false);
         }
     }

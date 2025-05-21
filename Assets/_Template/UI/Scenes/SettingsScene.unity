@@ -268,80 +268,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1585990659}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ResetToDefaultButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Unity.FPS.UI.GameSettingUIManager, fps.UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 3470818566008744055, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 3540934785103262736, guid: c902ce43d1bed73439ae9072b2c3cef5,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1585990659}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ExitButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Unity.FPS.UI.GameSettingUIManager, fps.UI
-      objectReference: {fileID: 0}
-    - target: {fileID: 7642218922112998083, guid: c902ce43d1bed73439ae9072b2c3cef5,
-        type: 3}
-      propertyPath: onClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8407809518163325832, guid: c902ce43d1bed73439ae9072b2c3cef5,
         type: 3}
@@ -481,18 +411,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!114 &1585990659 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8471676046925704867, guid: c902ce43d1bed73439ae9072b2c3cef5,
-    type: 3}
-  m_PrefabInstance: {fileID: 452702352}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66fb6cee2d8eb494c9112a6688754a0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1698016508
 GameObject:
   m_ObjectHideFlags: 0
